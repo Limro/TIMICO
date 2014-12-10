@@ -145,7 +145,47 @@ void SendRequest(out long ts, out long tm)
 	\end{frame}
 
 
+	\begin{frame}[containsverbatim]{Retrieving the time}
+	\begin{lstlisting}[style=Code-C++]
+long GetTime()
+{
+	var elapsed = sw.Elapsed.Ticks;
+	now += elapsed - lastElapsed;
 
+	lastElapsed = elapsed;
+
+	return now;
+}
+	\end{lstlisting}
+	\end{frame}
+
+	\begin{frame}{The master}
+	\begin{itemize}
+		\item Must send its time to the slave.
+		\item Must answer the slave when asking for time.
+	\end{itemize}
+	\end{frame}
+
+
+	\begin{frame}[containsverbatim]{Retrieving the time}
+	\begin{lstlisting}[style=Code-C++]
+const int send_period = 485; // milliseconds
+
+while (keepRunning)
+{
+	var tm = getCurrentTime();
+
+	//Console.WriteLine("Master: sending {0}", instance.value / 10 / 1000);
+
+	master.sendSync(tm + jitter());
+	master.sendFollowup(tm);						
+
+	Thread.Sleep(send_period);
+}
+	\end{lstlisting}
+	\end{frame}
+
+ 	
 
 
 \end{document}
