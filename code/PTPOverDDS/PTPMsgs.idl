@@ -1,0 +1,18 @@
+module PTP
+{
+
+  enum MsgType
+  {
+    SYNC,
+    FOLLOWUP,
+    DELAYREQUEST,
+    DELAYRESPONSE
+  };
+
+  struct Msg
+  {
+    MsgType type;         
+    unsigned long long value;     
+  };
+
+};

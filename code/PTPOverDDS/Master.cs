@@ -43,9 +43,11 @@ namespace PTP
                     
                     while (keepRunning)
                     {
-                        var tm = getCurrentTime();
+                       
 
                         //Console.WriteLine("Master: sending {0}", instance.value / 10 / 1000);
+
+                        var tm = getCurrentTime();
 
                         master.sendSync(tm + jitter());
                         master.sendFollowup(tm);                        
