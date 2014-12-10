@@ -43,8 +43,6 @@ namespace PTP
                     
                     while (keepRunning)
                     {
-                       
-
                         //Console.WriteLine("Master: sending {0}", instance.value / 10 / 1000);
 
                         var tm = getCurrentTime();

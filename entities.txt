@@ -1,0 +1,24 @@
+DCPS entities
+
+	• 3 topics
+		○ "PTP" - Broadcast master(s) to slave(s), explicit
+			§ SYNC, FOLLOWUP
+		○ "PTPRequest" - slave to master, implicit
+			§ DELAYREQUEST
+		○ "PTPReply" - master to slave, implicit
+			§ DELAYRESPONSE
+	• 1 domain - id 0
+	• Master
+		○ DomainParticipant
+		○ Publisher
+		○ Topic("PTP")
+		○ MsgDataWriter
+		○ Replier (abstracts Subscriber + Publisher and DataReader + DataWriter)
+			§ Topics "PTPRequest" + "PTPReply"
+	• Slave
+		○ DomainParticipant
+		○ Subscriber
+		○ Topic("PTP")
+		○ MsgDataReader
+		○ Requester (abstracts Subscriber + Publisher and DataReader + DataWriter)
+			§ Topics "PTPRequest" + "PTPReply"

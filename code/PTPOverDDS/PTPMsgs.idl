@@ -1,6 +1,5 @@
 module PTP
 {
-
   enum MsgType
   {
     SYNC,
@@ -14,5 +13,4 @@ module PTP
     MsgType type;         
     unsigned long long value;     
   };
-
 };
