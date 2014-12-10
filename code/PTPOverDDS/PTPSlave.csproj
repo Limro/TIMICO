@@ -7,8 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PTPMsgs_subscriber</RootNamespace>
-    <AssemblyName>PTPMsgs_subscriber</AssemblyName>
+    <RootNamespace>PTP</RootNamespace>
+    <AssemblyName>PTPSlave</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectGuid>{8E420232-A373-41D3-AA50-83B62C0E2B2C}</ProjectGuid>

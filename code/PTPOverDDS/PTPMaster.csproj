@@ -7,8 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PTPMsgs_publisher</RootNamespace>
-    <AssemblyName>PTPMsgs_publisher</AssemblyName>
+    <RootNamespace>PTP</RootNamespace>
+    <AssemblyName>PTPMaster</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectGuid>{BF900500-D48B-438B-827F-01512AC24AB1}</ProjectGuid>
@@ -55,7 +55,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PTPMsgs_publisher.cs" />
+    <Compile Include="Master.cs" />
+    <Compile Include="MsgReplierListener.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="USER_QOS_PROFILES.xml">
