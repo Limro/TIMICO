@@ -31,6 +31,7 @@
 	stepnumber		= 2,
 	numbersep		= 6pt,
 	tabsize			= 2,
+	showtabs		= false,
 	breaklines		= true,
 	prebreak 		= \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
 	breakatwhitespace= false,
@@ -47,7 +48,6 @@
 }
 
 %Bredde der bruges til indryk
-%Den skal være 6 pt mindre
 \usepackage{calc}
 
 
@@ -55,7 +55,7 @@
 \usepackage{caption}
 \DeclareCaptionFont{white}{\color{white}}
 \DeclareCaptionFormat{listing}%
-{\colorbox[cmyk]{0.43, 0.35, 0.35,0.35}{\parbox{\textwidth - \marginparsep}{\hspace{5pt}#1#2#3}}}
+{\colorbox[cmyk]{0.43, 0.35, 0.35,0.35}{\parbox{\textwidth - 6pt}{\hspace{5pt}#1#2#3}}}
 
 \captionsetup[lstlisting]
 {
