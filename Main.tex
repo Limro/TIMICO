@@ -175,8 +175,6 @@ while (keepRunning)
 {
 	var tm = getCurrentTime();
 
-	//Console.WriteLine("Master: sending {0}", instance.value / 10 / 1000);
-
 	master.sendSync(tm + jitter());
 	master.sendFollowup(tm);						
 
@@ -186,6 +184,41 @@ while (keepRunning)
 	\end{frame}
 
  	
+
+	\begin{frame}[containsverbatim]{Sending data to the slave}
+	\begin{lstlisting}[style=Code-C++]
+public void sendSync(long estimatedTm)
+{
+	instance.type = MsgType.SYNC;
+	instance.value = (ulong)estimatedTm;
+	writer.write(instance, ref instance_handle);
+}
+	\end{lstlisting}
+
+	The function \code{sendFollowup(long tm)} is very similar.
+	\end{frame}
+
+
+
+	\begin{frame}[containsverbatim]{Respons from slave}
+	\begin{lstlisting}[style=Code-C++]
+class MsgReplierListener : SimpleReplierListener<Msg, Msg>
+{
+	Msg reply = new Msg { type = MsgType.DELAYRESPONSE };
+
+	Msg OnRequestAvailable(Sample<Msg> request)
+	{
+		reply.type = MsgType.DELAYRESPONSE;
+		reply.value = (ulong)Master.getCurrentTime();
+		return reply;
+	}
+}
+	\end{lstlisting}
+
+	\end{frame}
+
+
+
 
 
 \end{document}
