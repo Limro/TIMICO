@@ -23,6 +23,78 @@
 \tableofcontents%[currentsection]
 \end{frame}
 
+\section{Theory of DDS}
+
+\begin{frame}{Results}
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width =0.9 \textwidth]{RTI_EntityOverview_small}
+\caption{DCPS model}
+\label{fig:referenceNavn}
+\end{figure}
+
+
+\end{frame}
+
+
+\begin{frame}{Theory 1/3}
+\begin{itemize}
+	\item 3 topics
+	\begin{itemize}
+		\item "PTP" - Broadcast master(s) to slave(s), explicit
+		\begin{itemize}
+			\item SYNC, FOLLOWUP
+		\end{itemize}
+		\item "PTPRequest" - slave to master, implicit
+		\begin{itemize}
+			\item DELAYREQUEST
+		\end{itemize}
+		\item "PTPReply" - master to slave, implicit
+		\begin{itemize}
+		 	\item DELAYRESPONSE
+		 \end{itemize} 
+	\end{itemize}
+
+	\item  1 domain - id 0
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{Theory 2/3}
+\begin{itemize}
+	\item Master
+	\begin{itemize}
+		\item DomainParticipant
+		\item  Publisher
+		\item Topic("PTP")
+		\item MsgDataWriter
+		\item Replier (abstracts Subscriber + Publisher and DataReader + DataWriter)
+		\begin{itemize}
+			\item  Topics "PTPRequest" + "PTPReply"
+		\end{itemize}
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{Theory 3/3}
+\begin{itemize}
+	\item Slave
+	\begin{itemize}
+		\item DomainParticipant
+		\item  Subscriber
+		\item Topic("PTP")
+		\item MsgDataReader
+		\item Requester (abstracts Subscriber + Publisher and DataReader + DataWriter)
+		\begin{itemize}
+			\item  Topics "PTPRequest" + "PTPReply"
+		\end{itemize}
+	\end{itemize}
+\end{itemize}
+\end{frame}
 	
 \section{The slave}
 	\begin{frame}{The slave's role}	
@@ -253,6 +325,19 @@ public void sendSync(long estimatedTm)
 	\end{frame}
 
 
+
+\section{Results}
+\begin{frame}{Results}
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width =0.9 \textwidth]{RTI_EntityOverview_small}
+\caption{DCPS model}
+\label{fig:referenceNavn}
+\end{figure}
+
+
+\end{frame}
 
 
 
