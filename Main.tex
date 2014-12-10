@@ -17,15 +17,11 @@
 
 \begin{document}
  	\frame{\titlepage}
-	
 
-	\begin{frame}[fragile]{Frame Title}
-	
-	\begin{lstlisting}[caption=Overskrift på boks, style=Code-C++, label=lst:referenceLabel]
-	var code = stuff;
-	\end{lstlisting}
-	
-	\end{frame}
+\begin{frame}
+\frametitle{Table of Contents}
+\tableofcontents%[currentsection]
+\end{frame}
 
 	
 \section{The slave}
@@ -39,25 +35,31 @@
 	\end{frame}
 
 
-	\begin{frame}[containsverbatim]
+\subsection{IDL generation}
+	\begin{frame}[containsverbatim]{The IDL file}
 
-	How to handle the data received:
 	\begin{lstlisting}[style=Code-C++]
-void handleDataReceived(Msg data)
+module PTP
 {
-   switch (data.type)
-	{
-		case MsgType.SYNC:
-			syncTs = clock.Now.Ticks;
-			break;
-		case MsgType.FOLLOWUP:
-			clock.Offset = syncTs - (long)data.value - Delay;
-			syncTm = (long)data.value;
-			break;
-	}
-}
+  enum MsgType
+  {
+    SYNC,
+    FOLLOWUP,
+    DELAYREQUEST,
+    DELAYRESPONSE
+  };
+  struct Msg
+  {
+    MsgType type;         
+    unsigned long long value;     
+  };
+};
 	\end{lstlisting}
 	\end{frame}
+
+
+
+\subsection{Slave functions}
 
 	\begin{frame}[containsverbatim]{Main loop}
 	
@@ -82,12 +84,34 @@ using(var slave = new Slave())
 
 
 
+
+	\begin{frame}[containsverbatim]{Handle the data received}
+	\begin{lstlisting}[style=Code-C++]
+void handleDataReceived(Msg data)
+{
+   switch (data.type)
+	{
+		case SYNC:
+			syncTs = clock.Now.Ticks;
+			break;
+		case FOLLOWUP:
+			clock.Offset = syncTs - data.value - Delay;
+			syncTm = data.value;
+			break;
+	}
+}
+	\end{lstlisting}
+	\end{frame}
+
+
+
+
 	\begin{frame}[containsverbatim]{Setup, part 1/2}
 	\begin{lstlisting}[style=Code-C++]
 void setup(int domain_id)
 {
-	participant = createParticipant(domain_id);
-	subscriber = createSubscriber(participant);		
+	participant= createParticipant(domain_id);
+	subscriber= createSubscriber(participant);		
 	var type_name = MsgTypeSupport.get_type_name();
 	MsgTypeSupport.register_type(participant, type_name);
 
@@ -111,12 +135,11 @@ void setup(int domain_id)
 
 
 
-
 	\begin{frame}[containsverbatim]{SendData 1/2}
 	\begin{lstlisting}[style=Code-C++]
 void SendRequest(out long ts, out long tm)
 {
-	var request = new Msg { type = MsgType.DELAYREQUEST };
+	var request = new Msg { type = DELAYREQUEST };
 	ts = clock.Now.Ticks;
 	requester.SendRequest(request);
 
@@ -134,15 +157,17 @@ void SendRequest(out long ts, out long tm)
 	{
 		if (reply.Info.valid_data)
 		{
-			if(reply.Data.type == MsgType.DELAYRESPONSE)
+			if(reply.Data.type == DELAYRESPONSE)
 			{
-				tm = (long)reply.Data.value;
+				tm = reply.Data.value;
 			}
 		}
 	}
 }
 	\end{lstlisting}
 	\end{frame}
+
+
 
 
 	\begin{frame}[containsverbatim]{Retrieving the time}
@@ -159,6 +184,30 @@ long GetTime()
 	\end{lstlisting}
 	\end{frame}
 
+
+
+	\begin{frame}[containsverbatim]{Respons from slave}
+	\begin{lstlisting}[style=Code-C++]
+class MsgReplierListener : SimpleReplierListener<Msg, Msg>
+{
+	Msg reply = new Msg {type=DELAYRESPONSE};
+
+	Msg OnRequestAvailable(Sample<Msg> req)
+	{
+		reply.type = DELAYRESPONSE;
+		reply.value = Master.getCurrentTime();
+		return reply;
+	}
+}
+	\end{lstlisting}
+
+	\end{frame}
+
+
+
+
+\section{Master}
+
 	\begin{frame}{The master}
 	\begin{itemize}
 		\item Must send its time to the slave.
@@ -167,18 +216,23 @@ long GetTime()
 	\end{frame}
 
 
+\subsection{Master functions}
 	\begin{frame}[containsverbatim]{Retrieving the time}
 	\begin{lstlisting}[style=Code-C++]
-const int send_period = 485; // milliseconds
-
-while (keepRunning)
+using (var master = new Master())
 {
-	var tm = getCurrentTime();
+	master.setup(domain_id: 0);
+	const int send_period = 485; 
 
-	master.sendSync(tm + jitter());
-	master.sendFollowup(tm);						
+	while (keepRunning)
+	{
+		var tm = getCurrentTime();
 
-	Thread.Sleep(send_period);
+		master.sendSync(tm + jitter());
+		master.sendFollowup(tm);						
+
+		Thread.Sleep(send_period);
+	}
 }
 	\end{lstlisting}
 	\end{frame}
@@ -190,31 +244,12 @@ while (keepRunning)
 public void sendSync(long estimatedTm)
 {
 	instance.type = MsgType.SYNC;
-	instance.value = (ulong)estimatedTm;
+	instance.value = estimatedTm;
 	writer.write(instance, ref instance_handle);
 }
 	\end{lstlisting}
 
 	The function \code{sendFollowup(long tm)} is very similar.
-	\end{frame}
-
-
-
-	\begin{frame}[containsverbatim]{Respons from slave}
-	\begin{lstlisting}[style=Code-C++]
-class MsgReplierListener : SimpleReplierListener<Msg, Msg>
-{
-	Msg reply = new Msg { type = MsgType.DELAYRESPONSE };
-
-	Msg OnRequestAvailable(Sample<Msg> request)
-	{
-		reply.type = MsgType.DELAYRESPONSE;
-		reply.value = (ulong)Master.getCurrentTime();
-		return reply;
-	}
-}
-	\end{lstlisting}
-
 	\end{frame}
 
 
