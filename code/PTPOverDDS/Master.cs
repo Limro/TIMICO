@@ -25,6 +25,14 @@ namespace PTP
 
         public static void Main(string[] args)
         {
+            var keepRunning = true;
+            ConsoleHandler.SetConsoleEventHandler((ctrl) =>
+            {
+                Console.WriteLine("Termination requested.");
+                keepRunning = false;
+                return true;
+            });
+
             try
             {
                 using (var master = new Master())
@@ -33,7 +41,7 @@ namespace PTP
 
                     const int send_period = 485; // milliseconds
                     
-                    while (true)
+                    while (keepRunning)
                     {
                         var tm = getCurrentTime();
 
@@ -50,6 +58,9 @@ namespace PTP
             {
                 Console.WriteLine("error in master: " + e.Message);
             }
+
+            Console.WriteLine("Master: terminating.");
+            Console.ReadKey();
         }
 
         public void sendSync(long estimatedTm)

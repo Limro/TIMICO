@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConsoleHandler.cs" />
     <Compile Include="Master.cs" />
     <Compile Include="MsgReplierListener.cs" />
   </ItemGroup>
