@@ -31,14 +31,13 @@
 \centering
 \includegraphics[width =0.9 \textwidth]{RTI_EntityOverview_small}
 \caption{DCPS model}
-\label{fig:referenceNavn}
 \end{figure}
 
 
 \end{frame}
 
 
-\begin{frame}{Theory 1/3}
+\begin{frame}{Mapping PTP to DDS 1/3}
 \begin{itemize}
 	\item 3 topics
 	\begin{itemize}
@@ -62,7 +61,7 @@
 
 
 
-\begin{frame}{Theory 2/3}
+\begin{frame}{Mapping PTP to DDS 2/3}
 \begin{itemize}
 	\item Master
 	\begin{itemize}
@@ -80,7 +79,7 @@
 
 
 
-\begin{frame}{Theory 3/3}
+\begin{frame}{Mapping PTP to DDS 3/3}
 \begin{itemize}
 	\item Slave
 	\begin{itemize}
@@ -108,7 +107,7 @@
 
 
 \subsection{IDL generation}
-	\begin{frame}[containsverbatim]{The IDL file}
+	\begin{frame}[containsverbatim]{The IDL file generated  with RTIDDSGEN}
 
 	\begin{lstlisting}[style=Code-C++]
 module PTP
@@ -133,7 +132,7 @@ module PTP
 
 \subsection{Slave functions}
 
-	\begin{frame}[containsverbatim]{Main loop}
+	\begin{frame}[containsverbatim]{Slave main loop}
 	
 	\begin{lstlisting}[style=Code-C++]
 using(var slave = new Slave())
@@ -178,36 +177,8 @@ void handleDataReceived(Msg data)
 
 
 
-	\begin{frame}[containsverbatim]{Setup, part 1/2}
-	\begin{lstlisting}[style=Code-C++]
-void setup(int domain_id)
-{
-	participant= createParticipant(domain_id);
-	subscriber= createSubscriber(participant);		
-	var type_name = MsgTypeSupport.get_type_name();
-	MsgTypeSupport.register_type(participant, type_name);
 
-	\end{lstlisting}
-	\end{frame}
-
-
-	\begin{frame}[containsverbatim]{Setup, part 2/2}
-	\begin{lstlisting}[style=Code-C++]
-
-	topic = createTopic(participant, type_name, "PTP");
-	reader = createReader(participant, subscriber, topic, reader_listener);
-
-	requester = new Requester<Msg, Msg>(participant, "PTP",
-		MsgTypeSupport.get_instance(),
-		MsgTypeSupport.get_instance());
-
-}
-	\end{lstlisting}
-	\end{frame}
-
-
-
-	\begin{frame}[containsverbatim]{SendData 1/2}
+	\begin{frame}[containsverbatim]{Sendrequest 1/2}
 	\begin{lstlisting}[style=Code-C++]
 void SendRequest(out long ts, out long tm)
 {
@@ -223,7 +194,7 @@ void SendRequest(out long ts, out long tm)
 
 
 
-	\begin{frame}[containsverbatim]{SendData 2/2}
+	\begin{frame}[containsverbatim]{Sendrequest 2/2}
 	\begin{lstlisting}[style=Code-C++]
 	if (received)
 	{
@@ -311,7 +282,7 @@ using (var master = new Master())
 
  	
 
-	\begin{frame}[containsverbatim]{Sending data to the slave}
+	\begin{frame}[containsverbatim]{Sending request to the slave}
 	\begin{lstlisting}[style=Code-C++]
 public void sendSync(long estimatedTm)
 {
@@ -331,9 +302,8 @@ public void sendSync(long estimatedTm)
 
 \begin{figure}[hbtp]
 \centering
-\includegraphics[width =0.9 \textwidth]{RTI_EntityOverview_small}
-\caption{DCPS model}
-\label{fig:referenceNavn}
+\includegraphics[width = 0.82 \textwidth]{SlaveScreen}
+\caption{Results}
 \end{figure}
 
 
