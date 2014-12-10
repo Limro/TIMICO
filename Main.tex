@@ -1,6 +1,7 @@
-\documentclass[compressed, presentation,notheorems]{beamer}
+\documentclass[compressed, presentation, notheorems, 12pt]{beamer}
 
 \input{Preamble}
+
 
 \title{Group 3's DDS system}
 \subtitle{Slides and presentation}
@@ -15,12 +16,136 @@
 \subject{DDS}
 
 \begin{document}
-  \frame{\titlepage}
+ 	\frame{\titlepage}
+	
+
 	\begin{frame}[fragile]{Frame Title}
+	
 	\begin{lstlisting}[caption=Overskrift på boks, style=Code-C++, label=lst:referenceLabel]
 	var code = stuff;
 	\end{lstlisting}
+	
 	\end{frame}
 
-\end{document}
+	
+\section{The slave}
+	\begin{frame}{The slave's role}	
 
+	\begin{itemize}
+		\item Receive timestamps from the master
+		\item Make delay request
+	\end{itemize}
+	
+	\end{frame}
+
+
+	\begin{frame}[containsverbatim]
+
+	How to handle the data received:
+	\begin{lstlisting}[style=Code-C++]
+void handleDataReceived(Msg data)
+{
+   switch (data.type)
+	{
+		case MsgType.SYNC:
+			syncTs = clock.Now.Ticks;
+			break;
+		case MsgType.FOLLOWUP:
+			clock.Offset = syncTs - (long)data.value - Delay;
+			syncTm = (long)data.value;
+			break;
+	}
+}
+	\end{lstlisting}
+	\end{frame}
+
+	\begin{frame}[containsverbatim]{Main loop}
+	
+	\begin{lstlisting}[style=Code-C++]
+using(var slave = new Slave())
+{
+	slave.setup(domain_id: 0);
+	
+	const int receive_period = 2000; 
+	while (keepRunning)
+	{
+		long delayTs, delayTm;
+		slave.SendRequest(out delayTs, out delayTm);
+		slave.setDelay(delayTs, delayTm);
+
+		Thread.Sleep(receive_period);
+	}
+}
+	\end{lstlisting}
+
+	\end{frame}
+
+
+
+	\begin{frame}[containsverbatim]{Setup, part 1/2}
+	\begin{lstlisting}[style=Code-C++]
+void setup(int domain_id)
+{
+	participant = createParticipant(domain_id);
+	subscriber = createSubscriber(participant);		
+	var type_name = MsgTypeSupport.get_type_name();
+	MsgTypeSupport.register_type(participant, type_name);
+
+	\end{lstlisting}
+	\end{frame}
+
+
+	\begin{frame}[containsverbatim]{Setup, part 2/2}
+	\begin{lstlisting}[style=Code-C++]
+
+	topic = createTopic(participant, type_name, "PTP");
+	reader = createReader(participant, subscriber, topic, reader_listener);
+
+	requester = new Requester<Msg, Msg>(participant, "PTP",
+		MsgTypeSupport.get_instance(),
+		MsgTypeSupport.get_instance());
+
+}
+	\end{lstlisting}
+	\end{frame}
+
+
+
+
+	\begin{frame}[containsverbatim]{SendData 1/2}
+	\begin{lstlisting}[style=Code-C++]
+void SendRequest(out long ts, out long tm)
+{
+	var request = new Msg { type = MsgType.DELAYREQUEST };
+	ts = clock.Now.Ticks;
+	requester.SendRequest(request);
+
+	var reply = requester.CreateReplySample();
+	var received = requester.ReceiveReply(reply, maxWait);
+
+	\end{lstlisting}
+	\end{frame}
+
+
+
+	\begin{frame}[containsverbatim]{SendData 2/2}
+	\begin{lstlisting}[style=Code-C++]
+	if (received)
+	{
+		if (reply.Info.valid_data)
+		{
+			if(reply.Data.type == MsgType.DELAYRESPONSE)
+			{
+				tm = (long)reply.Data.value;
+			}
+		}
+	}
+}
+	\end{lstlisting}
+	\end{frame}
+
+
+
+
+
+\end{document}
