@@ -59,6 +59,9 @@
 *.out
 *.synctex.gz
 *.orig
+*.nav
+*.snm
+*.vrb
 
 *.pdf
 
