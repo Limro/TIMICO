@@ -3,7 +3,7 @@
 \input{Preamble}
 
 
-\title{Group 3's DDS system}
+\title{Group 3's PTP system}
 \subtitle{Slides and presentation}
 \author[Author, Anders] % (optional, for multiple authors)
 {L.~Brøsted \and R.~Bækgaard \and M.~Manø \and C.~Werge}
@@ -101,6 +101,7 @@
 	\begin{itemize}
 		\item Receive timestamps from the master
 		\item Make delay request
+		\item Keep track of time
 	\end{itemize}
 	
 	\end{frame}
@@ -210,10 +211,7 @@ void SendRequest(out long ts, out long tm)
 	\end{lstlisting}
 	\end{frame}
 
-
-
-
-	\begin{frame}[containsverbatim]{Retrieving the time}
+\begin{frame}[containsverbatim]{Simulating slave clock}
 	\begin{lstlisting}[style=Code-C++]
 long GetTime()
 {
@@ -227,28 +225,6 @@ long GetTime()
 	\end{lstlisting}
 	\end{frame}
 
-
-
-	\begin{frame}[containsverbatim]{Respons from slave}
-	\begin{lstlisting}[style=Code-C++]
-class MsgReplierListener : SimpleReplierListener<Msg, Msg>
-{
-	Msg reply = new Msg {type=DELAYRESPONSE};
-
-	Msg OnRequestAvailable(Sample<Msg> req)
-	{
-		reply.type = DELAYRESPONSE;
-		reply.value = Master.getCurrentTime();
-		return reply;
-	}
-}
-	\end{lstlisting}
-
-	\end{frame}
-
-
-
-
 \section{Master}
 
 	\begin{frame}{The master}
@@ -260,7 +236,7 @@ class MsgReplierListener : SimpleReplierListener<Msg, Msg>
 
 
 \subsection{Master functions}
-	\begin{frame}[containsverbatim]{Retrieving the time}
+	\begin{frame}[containsverbatim]{Main}
 	\begin{lstlisting}[style=Code-C++]
 using (var master = new Master())
 {
@@ -282,7 +258,7 @@ using (var master = new Master())
 
  	
 
-	\begin{frame}[containsverbatim]{Sending request to the slave}
+	\begin{frame}[containsverbatim]{Broadcasting SYNC to the slaves}
 	\begin{lstlisting}[style=Code-C++]
 public void sendSync(long estimatedTm)
 {
@@ -295,6 +271,22 @@ public void sendSync(long estimatedTm)
 	The function \code{sendFollowup(long tm)} is very similar.
 	\end{frame}
 
+\begin{frame}[containsverbatim]{Response from slave}
+	\begin{lstlisting}[style=Code-C++]
+class MsgReplierListener : SimpleReplierListener<Msg, Msg>
+{
+	Msg reply = new Msg {type=DELAYRESPONSE};
+
+	Msg OnRequestAvailable(Sample<Msg> req)
+	{
+		reply.type = DELAYRESPONSE;
+		reply.value = Master.getCurrentTime();
+		return reply;
+	}
+}
+	\end{lstlisting}
+
+	\end{frame}
 
 
 \section{Results}
