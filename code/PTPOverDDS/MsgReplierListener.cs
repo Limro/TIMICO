@@ -15,7 +15,7 @@ namespace PTP
             if (request.Info.valid_data)
             {
                 reply.type = MsgType.DELAYRESPONSE;
-                reply.value = (ulong)Master.getCurrentTime();
+                reply.value = (ulong)Master.getCurrentTime().Ticks;
                 return reply;
             }
             else

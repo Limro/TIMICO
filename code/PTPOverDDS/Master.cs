@@ -43,9 +43,10 @@ namespace PTP
                     
                     while (keepRunning)
                     {
-                        //Console.WriteLine("Master: sending {0}", instance.value / 10 / 1000);
+                        var currentTime = getCurrentTime();
+                        var tm = currentTime.Ticks;
 
-                        var tm = getCurrentTime();
+                        Console.WriteLine("Master: current time: {0}", currentTime);
 
                         master.sendSync(tm + jitter());
                         master.sendFollowup(tm);                        
@@ -77,9 +78,9 @@ namespace PTP
             writer.write(instance, ref instance_handle);
         }
 
-        public static long getCurrentTime()
+        public static DateTime getCurrentTime()
         {
-            return DateTime.Now.Ticks;
+            return DateTime.Now;
         }
 
         public static long jitter()

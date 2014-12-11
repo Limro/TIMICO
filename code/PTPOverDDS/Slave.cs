@@ -81,8 +81,6 @@ namespace PTP
                     const int receive_period = 2000; // milliseconds
                     while (keepRunning)
                     {
-                        Console.WriteLine("Current time: {0}", slave.clock.Now);
-
                         long delayTs, delayTm;
                         slave.SendRequest(out delayTs, out delayTm);
                         slave.setDelay(delayTs, delayTm);

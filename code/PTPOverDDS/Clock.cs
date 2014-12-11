@@ -24,9 +24,11 @@ namespace PTP
         {
             set 
             {
-                Console.WriteLine("Clock: time adjusted by offset: " + offset);
                 now -= value;
                 offset = value;
+
+                Console.WriteLine("Clock: new offset: " + offset);
+                Console.WriteLine("Clock: new time " + Now);
             }
             get 
             {
